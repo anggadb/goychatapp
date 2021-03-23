@@ -7,5 +7,6 @@ import (
 )
 
 func UserRouter(route *gin.RouterGroup) {
+	route.POST("user", c.CreateUser)
 	route.GET("users", c.GetAllUsers)
 }

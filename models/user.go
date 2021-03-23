@@ -10,7 +10,7 @@ type User struct {
 	ID        int64          `json:"id"`
 	Name      string         `json:"name"`
 	Email     string         `json:"email"`
-	Username  string         `json:"username"`
+	Username  lib.NullString `json:"username"`
 	Password  string         `json:"password"`
 	Photo     lib.NullString `json:"photo"`
 	Active    bool           `json:"active"`
@@ -18,11 +18,17 @@ type User struct {
 	CreatedAt time.Time      `json:"created_at"`
 }
 
-// func CreateUser(user User) *User {
-// 	db := lib.CreateConnection()
-// 	defer db.Close()
-
-// }
+func CreateUser(user User) int64 {
+	var id int64
+	db := lib.CreateConnection()
+	defer db.Close()
+	sql := "INSERT INTO users (name,password,email) VALUES ($1,$2,$3) RETURNING id"
+	err := db.QueryRow(sql, user.Name, user.Password, user.Email).Scan(&id)
+	if err != nil {
+		log.Fatalf("Tidak Bisa mengeksekusi query. %v", err)
+	}
+	return id
+}
 func GetAllUsers() ([]User, error) {
 	db := lib.CreateConnection()
 	defer db.Close()
