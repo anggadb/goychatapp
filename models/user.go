@@ -15,6 +15,7 @@ type User struct {
 	Photo     lib.NullString `json:"photo"`
 	Active    bool           `json:"active"`
 	Verified  bool           `json:"verified"`
+	Type      string         `json:"type"`
 	CreatedAt time.Time      `json:"created_at"`
 }
 
@@ -29,6 +30,19 @@ func CreateUser(user User) int64 {
 	}
 	return id
 }
+func GetUser(user User) (User, error) {
+	var u User
+	var e error = nil
+	db := lib.CreateConnection()
+	defer db.Close()
+	sqlState := "SELECT * FROM users WHERE username = 'anggbchtr'"
+	row := db.QueryRow(sqlState)
+	err := row.Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Password, &u.Photo, &u.Active, &u.Verified, &u.CreatedAt, &u.Type)
+	if err != nil {
+		e = err
+	}
+	return u, e
+}
 func GetAllUsers() ([]User, error) {
 	db := lib.CreateConnection()
 	defer db.Close()
@@ -41,7 +55,7 @@ func GetAllUsers() ([]User, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var user User
-		err = rows.Scan(&user.ID, &user.Name, &user.Email, &user.Username, &user.Password, &user.Photo, &user.Active, &user.Verified, &user.CreatedAt)
+		err = rows.Scan(&user)
 		if err != nil {
 			log.Fatalf("Error while fetch datas. %v", err)
 		}
