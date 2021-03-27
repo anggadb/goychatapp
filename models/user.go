@@ -15,8 +15,8 @@ type User struct {
 	Photo     lib.NullString `json:"photo"`
 	Active    bool           `json:"active"`
 	Verified  bool           `json:"verified"`
-	Type      string         `json:"type"`
 	CreatedAt time.Time      `json:"created_at"`
+	Type      string         `json:"type"`
 }
 
 func CreateUser(user User) int64 {
@@ -35,8 +35,8 @@ func GetUser(user User) (User, error) {
 	var e error = nil
 	db := lib.CreateConnection()
 	defer db.Close()
-	sqlState := "SELECT * FROM users WHERE username = 'anggbchtr'"
-	row := db.QueryRow(sqlState)
+	sqlState := "SELECT * FROM users WHERE email=$1"
+	row := db.QueryRow(sqlState, user.Email)
 	err := row.Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Password, &u.Photo, &u.Active, &u.Verified, &u.CreatedAt, &u.Type)
 	if err != nil {
 		e = err
