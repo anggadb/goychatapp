@@ -11,9 +11,9 @@ import (
 )
 
 type Payload struct {
-	ID       uint       `json:"id"`
-	Username NullString `json:"username"`
-	Type     string     `json:"type"`
+	ID    uint   `json:"id"`
+	Email string `json:"email"`
+	Type  string `json:"type"`
 	jwt.StandardClaims
 }
 
@@ -48,7 +48,7 @@ func AdminAuth(c *gin.Context) {
 	}
 	c.Set("id", claims.ID)
 	c.Set("type", claims.Type)
-	c.Set("username", claims.Username)
+	c.Set("email", claims.Email)
 	c.Next()
 }
 func UserAuth(c *gin.Context) {
@@ -70,7 +70,7 @@ func UserAuth(c *gin.Context) {
 		}
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"message": "Gagal memproses token",
-			"error":   err,
+			"error":   err.Error(),
 		})
 		return
 	}
@@ -82,6 +82,6 @@ func UserAuth(c *gin.Context) {
 	}
 	c.Set("id", claims.ID)
 	c.Set("type", claims.Type)
-	c.Set("username", claims.Username)
+	c.Set("email", claims.Email)
 	c.Next()
 }

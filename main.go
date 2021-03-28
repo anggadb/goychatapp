@@ -17,5 +17,6 @@ func main() {
 	}
 	router := gin.Default()
 	r.UserRouter(router.Group(os.Getenv("API_VERSION")))
+	r.AdminRouters(router.Group(os.Getenv("API_VERSION")))
 	router.Run(os.Getenv("PORT"))
 }

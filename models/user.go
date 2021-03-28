@@ -23,20 +23,20 @@ func CreateUser(user User) int64 {
 	var id int64
 	db := lib.CreateConnection()
 	defer db.Close()
-	sql := "INSERT INTO users (name,password,email) VALUES ($1,$2,$3) RETURNING id"
-	err := db.QueryRow(sql, user.Name, user.Password, user.Email).Scan(&id)
+	query := "INSERT INTO users (name,password,email) VALUES ($1,$2,$3) RETURNING id"
+	err := db.QueryRow(query, user.Name, user.Password, user.Email).Scan(&id)
 	if err != nil {
 		log.Fatalf("Tidak Bisa mengeksekusi query. %v", err)
 	}
 	return id
 }
-func GetUser(user User) (User, error) {
+func GetUser(email string) (User, error) {
 	var u User
 	var e error = nil
 	db := lib.CreateConnection()
 	defer db.Close()
-	sqlState := "SELECT * FROM users WHERE email=$1"
-	row := db.QueryRow(sqlState, user.Email)
+	query := "SELECT * FROM users WHERE email=$1"
+	row := db.QueryRow(query, email)
 	err := row.Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Password, &u.Photo, &u.Active, &u.Verified, &u.CreatedAt, &u.Type)
 	if err != nil {
 		e = err
@@ -47,8 +47,8 @@ func GetAllUsers() ([]User, error) {
 	db := lib.CreateConnection()
 	defer db.Close()
 	var users []User
-	sql := "SELECT * FROM users"
-	rows, err := db.Query(sql)
+	query := "SELECT * FROM users"
+	rows, err := db.Query(query)
 	if err != nil {
 		log.Fatalf("Error execute query. %v", err)
 	}
@@ -62,4 +62,19 @@ func GetAllUsers() ([]User, error) {
 		users = append(users, user)
 	}
 	return users, err
+}
+func UpdateUser(email string, user User) (int64, error) {
+	var e error = nil
+	db := lib.CreateConnection()
+	defer db.Close()
+	query := "UPDATE users SET name=$1, email=$2, username=$3, password=$4, photo=$5 WHERE email=$6"
+	res, err := db.Exec(query, user.Name, user.Email, user.Username, user.Password, user.Photo, email)
+	if err != nil {
+		e = err
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		e = err
+	}
+	return rows, e
 }

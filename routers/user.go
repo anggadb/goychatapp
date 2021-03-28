@@ -9,6 +9,7 @@ import (
 
 func UserRouter(route *gin.RouterGroup) {
 	route.POST("user", c.CreateUser)
-	route.GET("users", jwt.AdminAuth, c.GetAllUsers)
+	route.GET("user", jwt.UserAuth, c.GetProfile)
+	route.PUT("user/update", jwt.UserAuth, c.UpdateProfile)
 	route.POST("user/login", c.Login)
 }
