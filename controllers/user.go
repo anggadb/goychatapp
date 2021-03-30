@@ -22,8 +22,21 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 	user.Password = hashedPassword
-	res := models.CreateUser(user)
-	c.JSON(http.StatusCreated, gin.H{"data": res})
+	res, err := models.CreateUser(user)
+	link := "Please click this link " + os.Getenv("DOMAIN") + "?token=" + res
+	mail := lib.SendMail("Verify Account", "Goy System <accdev.bachtiar@gmail.com>", link, []string{user.Email}, []string{}, []string{})
+	if mail != nil {
+		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"message": mail.Error()})
+		return
+	}
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{
+		"data":    res,
+		"message": "Silahkan cek email anda",
+	})
 }
 func GetProfile(c *gin.Context) {
 	email := fmt.Sprintf("%v", c.MustGet("email"))
@@ -36,20 +49,32 @@ func GetProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 func UpdateProfile(c *gin.Context) {
-	var user models.User
-	c.ShouldBind(&user)
 	email := fmt.Sprintf("%v", c.MustGet("email"))
 	res, err := models.GetUser(email)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	rows, err := models.UpdateUser(res.Email, user)
+	c.ShouldBind(&res)
+	rows, err := models.UpdateUser(res.Email, res)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": rows})
+}
+func DeleteAccount(c *gin.Context) {
+	email := fmt.Sprintf("%v", c.MustGet("email"))
+	res, err := models.DeleteUser(email)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	if res == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Akun tidak ditemukan"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 func Login(c *gin.Context) {
 	var user models.User

@@ -12,4 +12,5 @@ func UserRouter(route *gin.RouterGroup) {
 	route.GET("user", jwt.UserAuth, c.GetProfile)
 	route.PUT("user/update", jwt.UserAuth, c.UpdateProfile)
 	route.POST("user/login", c.Login)
+	route.DELETE("user/delete", jwt.UserAuth, c.DeleteAccount)
 }
