@@ -23,7 +23,7 @@ func CreateUser(c *gin.Context) {
 	}
 	user.Password = hashedPassword
 	res, err := models.CreateUser(user)
-	link := "Please click this link " + os.Getenv("DOMAIN") + "?token=" + res
+	link := "Please click this link " + os.Getenv("DOMAIN") + "/verify-account?token=" + res + "&user=" + user.Email
 	mail := lib.SendMail("Verify Account", "Goy System <accdev.bachtiar@gmail.com>", link, []string{user.Email}, []string{}, []string{})
 	if mail != nil {
 		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"message": mail.Error()})
@@ -110,4 +110,29 @@ func Login(c *gin.Context) {
 	}
 	res.Password = ""
 	c.JSON(http.StatusOK, gin.H{"token": encodedToken, "data": res})
+}
+
+func VerifyAccount(c *gin.Context) {
+	email := c.Query("user")
+	token := c.Query("token")
+	user, err := models.GetUser(email)
+	if err != nil {
+		fmt.Println("a")
+		lib.HTMLErrorResponse(err, http.StatusConflict, "<b>Akun tidak ditemukan<b>", c)
+		return
+	}
+	err = models.GetToken(token, "verify-account", user.ID)
+	if err != nil {
+		fmt.Println("b")
+		lib.HTMLErrorResponse(err, http.StatusConflict, "<b>Akun tidak ditemukan</b>", c)
+		return
+	}
+	user.Active = true
+	user.Verified = true
+	_, err = models.UpdateUser(user.Email, user)
+	if err != nil {
+		lib.HTMLErrorResponse(err, http.StatusConflict, "<b>Error saat memperbarui user</b>", c)
+		return
+	}
+	lib.HTMLResponse("<b>Akun anda berhasil diverifikasi</b>", http.StatusOK, c)
 }

@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	c "goychatapp/controllers"
 	r "goychatapp/routers"
 
 	"github.com/gin-gonic/gin"
@@ -18,5 +19,6 @@ func main() {
 	router := gin.Default()
 	r.UserRouter(router.Group(os.Getenv("API_VERSION")))
 	r.AdminRouters(router.Group(os.Getenv("API_VERSION")))
+	router.GET("verify-account", c.VerifyAccount)
 	router.Run(os.Getenv("PORT"))
 }
