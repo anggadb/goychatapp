@@ -19,6 +19,7 @@ func main() {
 	router := gin.Default()
 	r.UserRouter(router.Group(os.Getenv("API_VERSION")))
 	r.AdminRouters(router.Group(os.Getenv("API_VERSION")))
+	r.FileRouters(router.Group(os.Getenv("API_VERSION")))
 	router.GET("verify-account", c.VerifyAccount)
 	router.Run(os.Getenv("PORT"))
 }

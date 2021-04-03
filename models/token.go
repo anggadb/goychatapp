@@ -39,7 +39,7 @@ func ActivateToken(token, tokenType string, userID int64) error {
 		tx.Rollback()
 		return nil
 	}
-	query = "UPDATE users SET verified=true WHERE id=$1"
+	query = "UPDATE users SET verified=true WHERE id=$1 AND verified=false"
 	_, err = tx.ExecContext(ctx, query, userID)
 	if err != nil {
 		tx.Rollback()

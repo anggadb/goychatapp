@@ -36,7 +36,7 @@ func AdminAuth(c *gin.Context) {
 		}
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"message": "Gagal memproses token",
-			"error":   err,
+			"error":   err.Error(),
 		})
 		return
 	}
