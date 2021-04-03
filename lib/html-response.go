@@ -19,7 +19,6 @@ func HTMLErrorResponse(e error, statusCode int, html string, c *gin.Context) *gi
 		c.Writer.Write([]byte(html))
 		return c
 	}
-	fmt.Println(e.Error())
 	errorString := fmt.Sprintf("<b>%s</b>", e.Error())
 	c.Writer.WriteHeader(statusCode)
 	c.Writer.Write([]byte(errorString))

@@ -117,21 +117,12 @@ func VerifyAccount(c *gin.Context) {
 	token := c.Query("token")
 	user, err := models.GetUser(email)
 	if err != nil {
-		fmt.Println("a")
 		lib.HTMLErrorResponse(err, http.StatusConflict, "<b>Akun tidak ditemukan<b>", c)
 		return
 	}
-	err = models.GetToken(token, "verify-account", user.ID)
+	err = models.ActivateToken(token, "verify-account", user.ID)
 	if err != nil {
-		fmt.Println("b")
 		lib.HTMLErrorResponse(err, http.StatusConflict, "<b>Akun tidak ditemukan</b>", c)
-		return
-	}
-	user.Active = true
-	user.Verified = true
-	_, err = models.UpdateUser(user.Email, user)
-	if err != nil {
-		lib.HTMLErrorResponse(err, http.StatusConflict, "<b>Error saat memperbarui user</b>", c)
 		return
 	}
 	lib.HTMLResponse("<b>Akun anda berhasil diverifikasi</b>", http.StatusOK, c)

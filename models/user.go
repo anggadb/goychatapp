@@ -31,7 +31,7 @@ func CreateUser(user User) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	query := "INSERT INTO users (name,password,email) VALUES ($1,$2,$3) RETURNING id"
+	query := "INSERT INTO users (name,password,email,active) VALUES ($1,$2,$3,true) RETURNING id"
 	err = tx.QueryRowContext(ctx, query, user.Name, user.Password, user.Email).Scan(&id)
 	if err != nil {
 		tx.Rollback()
