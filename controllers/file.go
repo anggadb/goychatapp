@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"goychatapp/models"
 	"net/http"
 	"os"
@@ -63,4 +64,26 @@ func GetAllFiles(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": files, "page": page, "per_page": perPage, "count": len(files)})
+}
+func DeleteFile(c *gin.Context) {
+	id := c.Params.ByName("id")
+	userID := c.MustGet("id").(uint)
+	userType := fmt.Sprintf("%v", c.MustGet("type"))
+	if userType == "user" {
+		res, err := models.GetFile(id)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			return
+		}
+		if res.UserId != userID {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "File anda tidak ditemukan"})
+			return
+		}
+	}
+	err := models.DeleteFile(id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Berhasil menghapus file"})
 }

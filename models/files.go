@@ -26,6 +26,17 @@ func CreateFile(file Files) (string, error) {
 	}
 	return path, nil
 }
+func GetFile(id string) (Files, error) {
+	var f Files
+	db := lib.CreateConnection()
+	defer db.Close()
+	query := "SELECT * FROM files WHERE id=$1"
+	err := db.QueryRow(query, id).Scan(&f.ID, &f.UserId, &f.Name, &f.Type, &f.CreatedAt, &f.Path)
+	if err != nil {
+		return f, err
+	}
+	return f, nil
+}
 func GetAllFiles(file Files, orderBy, order string, page, perPage int) ([]Files, error) {
 	var files []Files
 	db := lib.CreateConnection()
@@ -55,4 +66,14 @@ func GetAllFiles(file Files, orderBy, order string, page, perPage int) ([]Files,
 		files = append(files, f)
 	}
 	return files, nil
+}
+func DeleteFile(id string) error {
+	db := lib.CreateConnection()
+	defer db.Close()
+	query := "DELETE FROM files WHERE id=$1"
+	_, err := db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
