@@ -87,7 +87,7 @@ func UpdateUser(email string, user User) (int64, error) {
 	db := lib.CreateConnection()
 	defer db.Close()
 	query := "UPDATE users SET name=$1, email=$2, username=$3, password=$4, photo=$5, active=$6, type=$7 WHERE email=$8"
-	res, err := db.Exec(query, user.Name, user.Email, user.Username, user.Password, user.Photo, user.Active, user.Type, email)
+	res, err := db.Exec(query, user.Name, user.Email, lib.TrimQuote(user.Username.String), user.Password, user.Photo, user.Active, user.Type, email)
 	if err != nil {
 		e = err
 		return 0, err
