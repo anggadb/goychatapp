@@ -2,9 +2,11 @@ package lib
 
 import (
 	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
 	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -13,6 +15,9 @@ import (
 type NullString struct {
 	sql.NullString
 }
+type NullTime struct {
+	sql.NullTime
+}
 
 func (s NullString) MarshalJSON() ([]byte, error) {
 	if !s.Valid {
@@ -20,7 +25,6 @@ func (s NullString) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(s.String)
 }
-
 func (s *NullString) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {
 		s.String, s.Valid = "", false
@@ -29,7 +33,16 @@ func (s *NullString) UnmarshalJSON(data []byte) error {
 	s.String, s.Valid = string(data), true
 	return nil
 }
-
+func (nt *NullTime) Scan(value interface{}) error {
+	nt.Time, nt.Valid = value.(time.Time)
+	return nil
+}
+func (nt NullTime) Value() (driver.Value, error) {
+	if !nt.Valid {
+		return nil, nil
+	}
+	return nt.Time, nil
+}
 func CreateConnection() *sql.DB {
 	err := godotenv.Load(".env")
 	if err != nil {

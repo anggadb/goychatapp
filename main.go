@@ -24,6 +24,7 @@ func main() {
 	r.UserRouter(router.Group(os.Getenv("API_VERSION")))
 	r.AdminRouters(router.Group(os.Getenv("API_VERSION")))
 	r.FileRouters(router.Group(os.Getenv("API_VERSION")))
+	r.RoomRouters(router.Group(os.Getenv("API_VERSION")))
 	router.GET("verify-account", c.VerifyAccount)
 	router.Static("image", wd+"/assets/images/")
 	router.Run(os.Getenv("PORT"))
