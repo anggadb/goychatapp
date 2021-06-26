@@ -5,8 +5,11 @@ import (
 	"strconv"
 )
 
-func DynamicFilters(ix interface{}) (string, error) {
+func DynamicFilters(ix interface{}, softDeleted bool) (string, error) {
 	where := ""
+	if softDeleted {
+		where = "deleted_at IS NULL AND "
+	}
 	values := reflect.ValueOf(ix)
 	args := []interface{}{}
 	for i := 0; i < values.NumField(); i++ {
@@ -33,3 +36,20 @@ func DynamicFilters(ix interface{}) (string, error) {
 	}
 	return where, nil
 }
+
+// package main
+
+// import (
+// 	"fmt"
+// )
+
+// func main() {
+// 	m := map[string]interface{}{"UserID": 1234, "Age": 18}
+// var values []interface{}
+// var where []string
+// for k, v := range m {
+//     values = append(values, v)
+//     where = append(where, fmt.Sprintf("%s = ?", k))
+// }
+// fmt.Println(where)
+// }

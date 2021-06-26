@@ -9,6 +9,6 @@ import (
 
 func FileRouters(route *gin.RouterGroup) {
 	route.POST("file", jwt.UserAdminAuth, c.UploadFile)
-	route.GET("files", jwt.AdminAuth, c.GetAllFiles)
+	route.GET("files", jwt.UserAuth, c.GetAllFiles)
 	route.DELETE("file/:id/delete", jwt.UserAdminAuth, c.DeleteFile)
 }

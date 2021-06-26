@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"goychatapp/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,4 +40,26 @@ func GetRoomById(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": room})
+}
+func GetAllRooms(c *gin.Context) {
+	var filters models.Room
+	c.Bind(&filters)
+	userId := c.MustGet("id").(uint)
+	filters.SenderId = userId
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	perPage, err := strconv.Atoi(c.Query("per_page"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	rooms, err := models.GetAllRooms(filters, c.Query("order_by"), c.Query("order"), page, perPage)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": rooms, "page": page, "per_page": perPage, "count": len(rooms)})
 }

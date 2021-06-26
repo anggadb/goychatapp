@@ -48,12 +48,13 @@ func GetAllRooms(r Room, orderBy, order string, page, perPage int) ([]Room, erro
 		limit = 1000000
 	}
 	offset := limit * (page - 1)
-	condition, err := lib.DynamicFilters(r)
+	condition, err := lib.DynamicFilters(r, true)
 	if err != nil {
 		return nil, err
 	}
-	pagination := fmt.Sprintf("ORDER BY %s %s LIMIT %d OFFSET %d", orderBy, order, limit, offset)
-	query := "SELECT * FROM files " + condition + pagination
+	pagination := fmt.Sprintf(" ORDER BY %s %s LIMIT %d OFFSET %d", orderBy, order, limit, offset)
+	query := "SELECT * FROM rooms WHERE " + condition + pagination
+	fmt.Println(query)
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err

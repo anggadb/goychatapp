@@ -46,12 +46,12 @@ func GetAllFiles(file Files, orderBy, order string, page, perPage int) ([]Files,
 		limit = 1000000
 	}
 	offset := limit * (page - 1)
-	condition, err := lib.DynamicFilters(file)
+	condition, err := lib.DynamicFilters(file, false)
 	if err != nil {
 		return nil, err
 	}
-	pagination := fmt.Sprintf("ORDER BY %s %s LIMIT %d OFFSET %d", orderBy, order, limit, offset)
-	query := "SELECT * FROM files " + condition + pagination
+	pagination := fmt.Sprintf(" ORDER BY %s %s LIMIT %d OFFSET %d", orderBy, order, limit, offset)
+	query := "SELECT * FROM files WHERE " + condition + pagination
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
