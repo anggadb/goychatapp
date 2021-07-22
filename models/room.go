@@ -17,6 +17,12 @@ type Room struct {
 	DeletedAt    lib.NullTime `json:"deleted_at"`
 }
 
+type RoomQuery struct {
+	ID       *uint   `col:"id"`
+	SenderId *uint   `col:"sender_id"`
+	Type     *string `col:"type"`
+}
+
 func CreateRoom(r Room) (int, error) {
 	var roomId int
 	db := lib.CreateConnection()
@@ -48,14 +54,14 @@ func GetAllRooms(r Room, orderBy, order string, page, perPage int) ([]Room, erro
 		limit = 1000000
 	}
 	offset := limit * (page - 1)
-	condition, err := lib.DynamicFilters(r, true)
+	pagination := fmt.Sprintf(" ORDER BY %s %s LIMIT %d OFFSET %d", orderBy, order, limit, offset)
+	rq := RoomQuery{ID: &r.ID, SenderId: &r.SenderId, Type: &r.Type}
+	where, args, err := lib.DynamicFilters(rq, true)
 	if err != nil {
 		return nil, err
 	}
-	pagination := fmt.Sprintf(" ORDER BY %s %s LIMIT %d OFFSET %d", orderBy, order, limit, offset)
-	query := "SELECT * FROM rooms WHERE " + condition + pagination
-	fmt.Println(query)
-	rows, err := db.Query(query)
+	query := "SELECT * FROM rooms " + where + pagination
+	rows, err := db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}

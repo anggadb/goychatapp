@@ -5,21 +5,25 @@ import (
 	"strconv"
 )
 
-func DynamicFilters(ix interface{}, softDeleted bool) (string, error) {
+func DynamicFilters(ix interface{}, softDeleted bool) (string, []interface{}, error) {
 	where := ""
+	args := []interface{}{}
 	if softDeleted {
 		where = "deleted_at IS NULL AND "
 	}
-	values := reflect.ValueOf(ix)
-	args := []interface{}{}
-	for i := 0; i < values.NumField(); i++ {
-		f := values.Field(i)
-		if f.IsZero() || !f.IsValid() || f.IsNil() {
+	rv := reflect.ValueOf(ix)
+	for i := 0; i < rv.NumField(); i++ {
+		f := rv.Field(i)
+		if !f.IsValid() || f.IsNil() {
 			continue
 		}
 		v := f.Elem().Interface()
 		switch ks := v.(type) {
 		case int:
+			if ks == 0 {
+				continue
+			}
+		case uint:
 			if ks == 0 {
 				continue
 			}
@@ -31,25 +35,11 @@ func DynamicFilters(ix interface{}, softDeleted bool) (string, error) {
 			continue
 		}
 		args = append(args, v)
-		col := values.Type().Field(i).Tag.Get("json")
-		where += col + "=$" + strconv.Itoa(len(args)) + " AND "
+		col := rv.Type().Field(i).Tag.Get("col")
+		where += col + " = $" + strconv.Itoa(len(args)) + " AND "
 	}
-	return where, nil
+	if wlen := len(where); wlen > 0 {
+		where = "WHERE " + where[:wlen-len(" AND ")]
+	}
+	return where, args, nil
 }
-
-// package main
-
-// import (
-// 	"fmt"
-// )
-
-// func main() {
-// 	m := map[string]interface{}{"UserID": 1234, "Age": 18}
-// var values []interface{}
-// var where []string
-// for k, v := range m {
-//     values = append(values, v)
-//     where = append(where, fmt.Sprintf("%s = ?", k))
-// }
-// fmt.Println(where)
-// }
