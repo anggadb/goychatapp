@@ -68,7 +68,7 @@ func GetAllRooms(r Room, orderBy, order string, page, perPage int) ([]Room, erro
 	defer rows.Close()
 	for rows.Next() {
 		var rm Room
-		err = rows.Scan(&rm.ID, &rm.SenderId, &rm.Participants, &rm.Type, &rm.CreatedAt, &rm.DeletedAt)
+		err = rows.Scan(&rm.ID, &rm.SenderId, (*pq.StringArray)(&rm.Participants), &rm.Type, &rm.CreatedAt, &rm.DeletedAt)
 		if err != nil {
 			return nil, err
 		}
