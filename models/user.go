@@ -20,6 +20,16 @@ type User struct {
 	Type      string         `json:"type"`
 }
 
+type UserQuery struct {
+	ID       *int64  `col:"id"`
+	Name     *string `col:"name"`
+	Email    *string `col:"email"`
+	Username *string `col:"username"`
+	Active   *bool   `col:"active"`
+	Verified *bool   `col:"verified"`
+	Type     *string `col:"type"`
+}
+
 func CreateUser(user User) (string, error) {
 	var id int64
 	var token string

@@ -51,7 +51,7 @@ func GetAllRooms(r Room, orderBy, order string, page, perPage int) ([]Room, erro
 	defer db.Close()
 	limit := perPage
 	if limit == 0 {
-		limit = 1000000
+		limit = 100
 	}
 	offset := limit * (page - 1)
 	pagination := fmt.Sprintf(" ORDER BY %s %s LIMIT %d OFFSET %d", orderBy, order, limit, offset)

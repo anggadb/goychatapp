@@ -15,6 +15,12 @@ type Files struct {
 	Path      string    `json:"path"`
 }
 
+type FilesQuery struct {
+	ID     *uint   `col:"id"`
+	UserId *uint   `col:"user_id"`
+	Type   *string `col:"type"`
+}
+
 func CreateFile(file Files) (string, error) {
 	var path string
 	db := lib.CreateConnection()
@@ -43,15 +49,16 @@ func GetAllFiles(file Files, orderBy, order string, page, perPage int) ([]Files,
 	defer db.Close()
 	limit := perPage
 	if limit == 0 {
-		limit = 1000000
+		limit = 100
 	}
 	offset := limit * (page - 1)
-	condition, args, err := lib.DynamicFilters(file, false)
+	pagination := fmt.Sprintf(" ORDER BY %s %s LIMIT %d OFFSET %d", orderBy, order, limit, offset)
+	fq := FilesQuery{ID: &file.ID, UserId: &file.UserId, Type: &file.Type}
+	where, args, err := lib.DynamicFilters(fq, false)
 	if err != nil {
 		return nil, err
 	}
-	pagination := fmt.Sprintf(" ORDER BY %s %s LIMIT %d OFFSET %d", orderBy, order, limit, offset)
-	query := "SELECT * FROM files WHERE " + condition + pagination
+	query := "SELECT * FROM files " + where + pagination
 	rows, err := db.Query(query, args...)
 	if err != nil {
 		return nil, err
