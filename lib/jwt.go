@@ -18,9 +18,12 @@ type Payload struct {
 }
 
 func AdminAuth(c *gin.Context) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error load the .env file")
+	_, exists := os.LookupEnv("TEST_ENV")
+	if !exists {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error load the .env file")
+		}
 	}
 	token := c.Request.Header.Get("Authorization")
 	claims := &Payload{}
@@ -51,9 +54,12 @@ func AdminAuth(c *gin.Context) {
 	c.Next()
 }
 func UserAuth(c *gin.Context) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error load the .env file")
+	_, exists := os.LookupEnv("TEST_ENV")
+	if !exists {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error load the .env file")
+		}
 	}
 	token := c.Request.Header.Get("Authorization")
 	claims := &Payload{}
@@ -84,12 +90,15 @@ func UserAuth(c *gin.Context) {
 	c.Next()
 }
 func UserAdminAuth(c *gin.Context) {
+	_, exists := os.LookupEnv("TEST_ENV")
+	if !exists {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error load the .env file")
+		}
+	}
 	var parsedToken *jwt.Token
 	var err error
-	err = godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error load the .env file")
-	}
 	token := c.Request.Header.Get("Authorization")
 	claims := &Payload{}
 	parsedToken, err = jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (interface{}, error) {
