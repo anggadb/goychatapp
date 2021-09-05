@@ -3,18 +3,20 @@ package test
 import (
 	c "goychatapp/controllers"
 	jwt "goychatapp/lib"
-	"log"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/steinfletcher/apitest"
 )
 
+var token string
+
 func TestGetUser(t *testing.T) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error load the .env file")
+	if os.Getenv("TEST_ENV") == "true" {
+		token = os.Getenv("USER_TEST_TOKEN")
+	} else {
+		token = "test"
 	}
 	r := gin.Default()
 	r.GET("/v1/user", jwt.UserAdminAuth, c.GetProfile)
@@ -22,7 +24,7 @@ func TestGetUser(t *testing.T) {
 	apitest.New().
 		Handler(testRoute.Router).
 		Get("/v1/user").
-		Headers(map[string]string{"Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTQsImVtYWlsIjoiYmFjaHRpYXIuYW5nZ2FAZ21haWwuY29tIiwidHlwZSI6InVzZXIiLCJleHAiOjE2MzEyMTQ2NjR9.2LUNgvoxNoEVLjBEQLYZud3q8CkQJ9bh3CyAwYAiVC0"}).
+		Headers(map[string]string{"Authorization": token}).
 		Expect(t).
 		Status(200).
 		End()
