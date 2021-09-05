@@ -12,9 +12,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Echo environment variable"
+          name: "Echo test environment"
           command: |
-            echo $USER_TOKEN
+            echo $TEST_ENV
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
