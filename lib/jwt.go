@@ -94,7 +94,6 @@ func UserAdminAuth(c *gin.Context) {
 	if !exists {
 		err := godotenv.Load(".env")
 		if err != nil {
-			log.Fatal("Baby")
 			log.Fatal("Error load the .env file")
 		}
 	}
