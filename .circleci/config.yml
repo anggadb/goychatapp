@@ -13,7 +13,8 @@ jobs:
       - checkout
       - run:
           name: "Echo environment variable"
-          command: echo $TOKEN_USER
+          command: |
+            echo $TOKEN_USER
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
