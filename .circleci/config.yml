@@ -1,14 +1,11 @@
 version: 2.1
-workflows:
-  test-env-vars:
-    jobs:
-      - build:
-          context: GCA
 jobs:
   build:
     working_directory: ~/repo
     docker:
       - image: circleci/golang:1.15.8
+        environment:
+          TEST_ENV: $TEST_ENV
     steps:
       - checkout
       - run:
