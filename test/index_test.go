@@ -17,7 +17,7 @@ func TestEnvs(t *testing.T) {
 	if !exists {
 		err := godotenv.Load(".env")
 		if err != nil {
-			t.Errorf(os.Getenv("TEST_ENV"))
+			t.Errorf(os.Environ())
 		}
 	}
 }
