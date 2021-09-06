@@ -4,14 +4,15 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: circleci/golang:1.15.8
-        environment:
-          TEST_ENV: $TEST_ENV
     steps:
       - checkout
       - run:
           name: "Echo test environment"
           command: |
             echo $TEST_ENV
+      - run:
+          name: "Set env"
+          command: echo TEST_ENV="$TEST_ENV" >> "${BASH_ENV}"
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
