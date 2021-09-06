@@ -4,6 +4,8 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: circleci/golang:1.15.8
+    environment:
+      TEST_ENV: $TEST_ENV
     steps:
       - checkout
       - run:
