@@ -22,7 +22,8 @@ jobs:
       - run:
           name: Run tests
           command: |
-            touch .env
+            touch test/.env
+            cd test/
             echo "TEST_ENV=$TEST_ENV" > .env
             echo "USER_TOKEN=$USER_TOKEN" > .env
             echo "ADMIN_TOKEN=$ADMIN_TOKEN" > .env
