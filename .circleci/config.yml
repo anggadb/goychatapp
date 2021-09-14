@@ -27,5 +27,5 @@ jobs:
             echo "USER_TOKEN=$USER_TOKEN" > .env
             echo "ADMIN_TOKEN=$ADMIN_TOKEN" > .env
             echo "USER_TEST_TOKEN=$USER_TEST_TOKEN" > .env
-            "cd test && go test"
+            cd test && go test
             rm .env
