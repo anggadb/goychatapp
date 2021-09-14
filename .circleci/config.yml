@@ -8,11 +8,7 @@ jobs:
       - checkout
       - run:
           name: "Echo test environment"
-          command: |
-            echo $TEST_ENV
-      - run:
-          name: "Set env"
-          command: echo TEST_ENV="$TEST_ENV" >> "${BASH_ENV}"
+          command: echo $TEST_ENV
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
@@ -25,4 +21,11 @@ jobs:
             - "/go/pkg/mod"
       - run:
           name: Run tests
-          command: "cd test && go test"
+          command: |
+            touch .env
+            echo "TEST_ENV=$TEST_ENV" > .env
+            echo "USER_TOKEN=$USER_TOKEN" > .env
+            echo "ADMIN_TOKEN=$ADMIN_TOKEN" > .env
+            echo "USER_TEST_TOKEN=$USER_TEST_TOKEN" > .env
+            "cd test && go test"
+            rm .env
