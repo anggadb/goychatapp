@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -12,6 +13,7 @@ import (
 )
 
 func main() {
+	fmt.Println(os.Getenv("TEST_ENV"))
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error load the .env file")
