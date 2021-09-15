@@ -32,7 +32,4 @@ jobs:
             echo "USER_TEST_TOKEN=$USER_TEST_TOKEN" > .env
             cd test && go test
             rm .env
-workflows:
-  heroku_deploy:
-    jobs:
       - heroku/deploy-via-git
